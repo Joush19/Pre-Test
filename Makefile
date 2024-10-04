@@ -46,7 +46,7 @@ IPATH=../../../..
 # The default rule, which causes the blinky example to be built.
 #
 all: ${COMPILER}
-all: ${COMPILER}/lab4.axf
+all: ${COMPILER}/sp1.axf
 
 #
 # The rule to clean out all the build products.
@@ -63,12 +63,12 @@ ${COMPILER}:
 #
 # Rules for building the blinky example.
 #
-${COMPILER}/lab4.axf: ${COMPILER}/lab4.o
-${COMPILER}/lab4.axf: ${COMPILER}/startup_${COMPILER}.o
-${COMPILER}/lab4.axf: ${ROOT}/driverlib/${COMPILER}/libdriver.a
-${COMPILER}/lab4.axf: lab4.ld
-SCATTERgcc_lab4=lab4.ld
-ENTRY_lab4=ResetISR
+${COMPILER}/sp1.axf: ${COMPILER}/sp1.o
+${COMPILER}/sp1.axf: ${COMPILER}/startup_${COMPILER}.o
+${COMPILER}/sp1.axf: ${ROOT}/driverlib/${COMPILER}/libdriver.a
+${COMPILER}/sp1.axf: sp1.ld
+SCATTERgcc_sp1=sp1.ld
+ENTRY_sp1=ResetISR
 CFLAGSgcc=-DTARGET_IS_TM4C129_RA1
 
 #
