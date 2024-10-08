@@ -65,20 +65,20 @@ __error__(char *pcFilename, uint32_t ui32Line)
 // Blink the on-board LED.
 //
 //*****************************************************************************
-
+//variables globales
 //uint32_t FS = (120000000*3)/2;
-bool state = false;
-void printData(void);
+bool state = false; //estado del led
+void printData(void); //declaracion de funcion para imprimir datos por uart
 //void blink(uint32_t distance);
-uint32_t ind = 0;
-char data[50];
-
+uint32_t ind = 0; //indice para recibir datos por uart
+char data[50]; // buffer de datos recibido por uart
+//configuracion del uart
 void uart(void){
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
     GPIOPinConfigure(GPIO_PA0_U0RX);
     GPIOPinConfigure(GPIO_PA1_U0TX);
-    GPIOPinTypeUART(GPIO_PORTA_BASE, 0x03);
-    UARTStdioConfig(0,9600,120000000);
+    GPIOPinTypeUART(GPIO_PORTA_BASE, 0x03); //define los pines PA0 y PA1 como uart
+    UARTStdioConfig(0,9600,120000000);// configura el uart con 9600 bps y frecuencia de 120 MHz
 }
 
 //
@@ -94,15 +94,15 @@ void checking(void){
 }
 
 void pinConfiguration(void){
-    GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, 0x03);
-    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, 0x11);
-    GPIOPinTypeGPIOInput(GPIO_PORTH_BASE, 0x03);
-    GPIOPinTypeGPIOInput(GPIO_PORTM_BASE, 0x07);
-
+    GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, 0x03); //Configura PN0 y PN1 como salida
+    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, 0x11); //Configura PF0 y PF4 como salida
+    GPIOPinTypeGPIOInput(GPIO_PORTH_BASE, 0x03); //Configura PH0 y PH1 como entrada
+    GPIOPinTypeGPIOInput(GPIO_PORTM_BASE, 0x07); //Configura PM0, PM1 y PM2 como entrada
+//Configura los pines de entrada con resistencia pull-up y fuerza de 2mA
     GPIOPadConfigSet(GPIO_PORTH_BASE, 0X03, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
     GPIOPadConfigSet(GPIO_PORTM_BASE, 0X07, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
 }
-
+//funcion principal
 int main(void)
 {
     //Clock Configuration
@@ -125,48 +125,48 @@ int main(void)
     //
     while(1)
     {
-        printData();
-        if(UARTCharsAvail(UART0_BASE)){
-            UARTgets(data, 50);
-            ind = atoi(data);
-            if (ind > 2000){
-                GPIOPinWrite(GPIO_PORTF_BASE, 0x11, 0x0);
+        printData(); //imprime los datos de los botones por uart
+        if(UARTCharsAvail(UART0_BASE)){ // si hay datos disponibles por uart
+            UARTgets(data, 50); // lee los datos recibidos
+            ind = atoi(data); //convierte los datos a un numeor entero
+            if (ind > 2000){ 
+                GPIOPinWrite(GPIO_PORTF_BASE, 0x11, 0x0); //Apaga los led PF0 Y PF4
                 if (state == false){
-                    GPIOPinWrite(GPIO_PORTN_BASE, 0x03, 0x0);
+                    GPIOPinWrite(GPIO_PORTN_BASE, 0x03, 0x0); //APAGA LOS LEDS PN0 y PN1
                 }
                 else{
-                    GPIOPinWrite(GPIO_PORTN_BASE, 0x03, 0x03);
+                    GPIOPinWrite(GPIO_PORTN_BASE, 0x03, 0x03);//Enciende los leds PN0 Y PN1
                 }
             }
             if ((ind < 2000) && (ind > 1500)){
-                GPIOPinWrite(GPIO_PORTN_BASE, 0x03, 0x0);
-                GPIOPinWrite(GPIO_PORTF_BASE, 0x11, 0x10);
+                GPIOPinWrite(GPIO_PORTN_BASE, 0x03, 0x0); //Apaga los leds de PN0 Y PN1
+                GPIOPinWrite(GPIO_PORTF_BASE, 0x11, 0x10); // Enciende el led pf4
             }
             else if (ind < 1000){
-                GPIOPinWrite(GPIO_PORTN_BASE, 0x03, 0x03);
-                GPIOPinWrite(GPIO_PORTF_BASE, 0x11, 0x11);
+                GPIOPinWrite(GPIO_PORTN_BASE, 0x03, 0x03);// enciende los leds pn0 y pn1
+                GPIOPinWrite(GPIO_PORTF_BASE, 0x11, 0x11); // enciende los leds pf0 y pf4
             }
-            state = !state;
+            state = !state; // cambia el estado del led
         }
         
     }
 }
-
+//funcion para imprimir el estado de los botones por uart
 void printData(void){
-    if (GPIOPinRead(GPIO_PORTM_BASE, 0x01) == 0){
+    if (GPIOPinRead(GPIO_PORTM_BASE, 0x01) == 0){ // si el boton pm0 esta presionado
         UARTprintf("0\n");
     }
-    else if (GPIOPinRead(GPIO_PORTM_BASE, 0x02) == 0){
+    else if (GPIOPinRead(GPIO_PORTM_BASE, 0x02) == 0){// si el boton pm1 esta precionado
         UARTprintf("1\n");
     }
-    else if (GPIOPinRead(GPIO_PORTM_BASE, 0x04) == 0){
+    else if (GPIOPinRead(GPIO_PORTM_BASE, 0x04) == 0){// si el boton pm2 esta presionado
         UARTprintf("2\n");
     }
-    else if (GPIOPinRead(GPIO_PORTH_BASE, 0x01) == 0){
+    else if (GPIOPinRead(GPIO_PORTH_BASE, 0x01) == 0){// si el boton ph0 esta presionado
         UARTprintf("3\n");
     }
-    else if (GPIOPinRead(GPIO_PORTH_BASE, 0x02) == 0){
+    else if (GPIOPinRead(GPIO_PORTH_BASE, 0x02) == 0){//si el boton ph1 esta presionado
         UARTprintf("4\n");
     }
-    SysCtlDelay(20000000);
+    SysCtlDelay(20000000); // retraso para evitar el rebote de los botones
 }
