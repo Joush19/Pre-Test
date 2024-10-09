@@ -152,6 +152,7 @@ while True:
         movement(value,dist)
         d = str(dist*100)+'\n'# Convierte la distancia a centímetros y le añade un salto de línea.
         ser.write(d.encode('utf-8'))# Envía la distancia a través del puerto serie en formato UTF-8.
+        #UTF-8 es una codificación de texto que convierte caracteres en bytes
         file.close()# Cierra el archivo 'config.txt' después de leerlo.
     except Exception as e:# Captura cualquier excepción que ocurra durante la ejecución del bloque try.
         print(e)# Imprime el error en la consola.
